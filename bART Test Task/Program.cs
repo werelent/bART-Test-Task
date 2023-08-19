@@ -1,11 +1,13 @@
-var builder = WebApplication.CreateBuilder(args);
+using bART_Test_Task.Models;
+using Microsoft.EntityFrameworkCore;
 
-// Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
+string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<TaskDbContext>(options => options.UseSqlServer(connection));
 
 var app = builder.Build();
 
