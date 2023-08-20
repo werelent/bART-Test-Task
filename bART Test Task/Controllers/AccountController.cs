@@ -24,7 +24,7 @@ namespace bART_Test_Task.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateAccount([FromBody] CreateAccountRequest request)
+        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountRequest request)
         {
             var existingContact = _dbContext.Contacts.FirstOrDefault(c => c.Email == request.ContactEmail);
 
@@ -46,7 +46,7 @@ namespace bART_Test_Task.Controllers
                 existingContact.Account = newAccount;
 
                 _dbContext.Accounts.Add(newAccount);
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
 
                 return Ok("Account created and linked to the contact");
             }

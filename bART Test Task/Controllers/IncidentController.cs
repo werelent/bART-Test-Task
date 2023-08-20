@@ -55,7 +55,7 @@ namespace bART_Test_Task.Controllers
 
             var newIncident = new Incident
             {
-                IncidentName = Guid.NewGuid().ToString(), // Generate a unique identifier for the incident
+                IncidentName = Guid.NewGuid().ToString(),
                 Description = request.IncidentDescription
             };
 
