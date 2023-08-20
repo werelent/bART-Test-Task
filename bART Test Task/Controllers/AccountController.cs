@@ -28,35 +28,34 @@ namespace bART_Test_Task.Controllers
         {
             var existingContact = _dbContext.Contacts.FirstOrDefault(c => c.Email == request.ContactEmail);
 
-            if (existingContact != null)
-            {
-                if (existingContact.Account != null)
-                {
-                    return Conflict("Contact is already linked to an account!");
-                }
-
-                var existingAccount = _dbContext.Accounts.FirstOrDefault(a => a.Name == request.AccountName);
-
-                if (existingAccount != null)
-                {
-                    return Conflict("Account with the provided name already exists!");
-                }
-
-                var newAccount = new Account { Name = request.AccountName };
-                existingContact.Account = newAccount;
-
-                existingContact.FirstName = request.ContactFirstName;
-                existingContact.LastName = request.ContactLastName;
-
-                _dbContext.Accounts.Add(newAccount);
-                await _dbContext.SaveChangesAsync();
-
-                return Ok("Account created and linked to the contact");
-            }
-            else
+            if (existingContact == null)
             {
                 return NotFound("Contact not found!");
             }
+
+            if (existingContact.Account != null)
+            {
+                return Conflict("Contact is already linked to an account!");
+            }
+
+            var existingAccount = _dbContext.Accounts.FirstOrDefault(a => a.Name == request.AccountName);
+
+            if (existingAccount != null)
+            {
+                return Conflict("Account with the provided name already exists!");
+            }
+
+            var newAccount = new Account { Name = request.AccountName };
+            existingContact.Account = newAccount;
+
+            existingContact.FirstName = request.ContactFirstName;
+            existingContact.LastName = request.ContactLastName;
+
+            _dbContext.Accounts.Add(newAccount);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok("Account created and linked to the contact");
         }
     }
+}
 }
