@@ -13,6 +13,11 @@ namespace bART_Test_Task.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Account>()
+                .HasMany(a => a.Contacts)
+                .WithOne(c => c.Account)
+                .HasForeignKey(c => c.AccountID);
+
+            modelBuilder.Entity<Account>()
                 .HasOne(a => a.Incident)
                 .WithMany(a => a.Accounts)
                 .HasForeignKey(a => a.IncidentName);

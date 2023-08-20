@@ -5,7 +5,7 @@
 namespace bART_Test_Task.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,7 +15,7 @@ namespace bART_Test_Task.Migrations
                 columns: table => new
                 {
                     IncidentName = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -29,7 +29,7 @@ namespace bART_Test_Task.Migrations
                     AccountId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    IncidentName = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    IncidentName = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -38,8 +38,7 @@ namespace bART_Test_Task.Migrations
                         name: "FK_Accounts_Incidents_IncidentName",
                         column: x => x.IncidentName,
                         principalTable: "Incidents",
-                        principalColumn: "IncidentName",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "IncidentName");
                 });
 
             migrationBuilder.CreateTable(
@@ -48,10 +47,10 @@ namespace bART_Test_Task.Migrations
                 {
                     ContactId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AccountID = table.Column<int>(type: "int", nullable: false)
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AccountID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -60,8 +59,7 @@ namespace bART_Test_Task.Migrations
                         name: "FK_Contacts_Accounts_AccountID",
                         column: x => x.AccountID,
                         principalTable: "Accounts",
-                        principalColumn: "AccountId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "AccountId");
                 });
 
             migrationBuilder.CreateIndex(

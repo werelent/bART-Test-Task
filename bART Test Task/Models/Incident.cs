@@ -6,7 +6,7 @@ namespace bART_Test_Task.Models
     {
         [Key]
         public string IncidentName { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         public List<Account> Accounts { get; set; }
     }

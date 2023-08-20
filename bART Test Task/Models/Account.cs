@@ -8,8 +8,8 @@ namespace bART_Test_Task.Models
         public int AccountId { get; set; }
         public string Name { get; set; }
 
-        public string IncidentName { get; set; }
-        public Incident Incident { get; set; }
+        public string? IncidentName { get; set; }
+        public Incident? Incident { get; set; }
 
         public List<Contact> Contacts { get; set; }
     }
