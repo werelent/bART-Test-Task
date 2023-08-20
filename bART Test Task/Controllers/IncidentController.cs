@@ -33,26 +33,6 @@ namespace bART_Test_Task.Controllers
                 return NotFound("Account not found!");
             }
 
-            var existingContact = _dbContext.Contacts.FirstOrDefault(c => c.Email == request.ContactEmail);
-
-            if (existingContact != null)
-            {
-                existingContact.FirstName = request.ContactFirstName;
-                existingContact.LastName = request.ContactLastName;
-                existingContact.Account = existingAccount;
-            }
-            else
-            {
-                var newContact = new Contact
-                {
-                    FirstName = request.ContactFirstName,
-                    LastName = request.ContactLastName,
-                    Email = request.ContactEmail,
-                    Account = existingAccount
-                };
-                _dbContext.Contacts.Add(newContact);
-            }
-
             var newIncident = new Incident
             {
                 IncidentName = Guid.NewGuid().ToString(),

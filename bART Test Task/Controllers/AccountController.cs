@@ -45,6 +45,9 @@ namespace bART_Test_Task.Controllers
                 var newAccount = new Account { Name = request.AccountName };
                 existingContact.Account = newAccount;
 
+                existingContact.FirstName = request.ContactFirstName;
+                existingContact.LastName = request.ContactLastName;
+
                 _dbContext.Accounts.Add(newAccount);
                 await _dbContext.SaveChangesAsync();
 
