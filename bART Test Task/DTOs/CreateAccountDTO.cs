@@ -1,6 +1,6 @@
 ﻿namespace bART_Test_Task.Requests
 {
-    public class CreateAccountRequest
+    public class CreateAccountDTO
     {
         public string AccountName { get; set; }
         public string ContactFirstName { get; set; }

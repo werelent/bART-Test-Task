@@ -1,5 +1,6 @@
 ﻿using bART_Test_Task.Models;
 using bART_Test_Task.Requests;
+using bART_Test_Task.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,42 +10,34 @@ namespace bART_Test_Task.Controllers
     [Route("api/incidents")]
     public class IncidentController : ControllerBase
     {
-        private readonly TaskDbContext _dbContext;
+        private readonly IIncidentService _incidentService;
 
-        public IncidentController(TaskDbContext dbContext)
+        public IncidentController(IIncidentService incidentService)
         {
-            _dbContext = dbContext;
+            _incidentService = incidentService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetIncidents()
         {
-            var incidents = await _dbContext.Incidents.ToListAsync();
+            var incidents = await _incidentService.GetIncidents();
             return Ok(incidents);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateIncident([FromBody] CreateIncidentRequest request)
+        public async Task<IActionResult> CreateIncident([FromBody] CreateIncidentDTO incidentDTO)
         {
-            var existingAccount = _dbContext.Accounts.FirstOrDefault(a => a.Name == request.AccountName);
+            var result = await _incidentService.CreateIncident(incidentDTO);
 
-            if (existingAccount == null)
+            switch (result)
             {
-                return NotFound("Account not found!");
+                case IncidentCreationResult.Success:
+                    return Ok("Incident created");
+                case IncidentCreationResult.AccountNotFound:
+                    return NotFound("Account not found!");
+                default:
+                    return StatusCode(500, "An error occurred");
             }
-
-            var newIncident = new Incident
-            {
-                IncidentName = Guid.NewGuid().ToString(),
-                Description = request.IncidentDescription
-            };
-
-            existingAccount.Incident = newIncident;
-            _dbContext.Incidents.Add(newIncident);
-
-            await _dbContext.SaveChangesAsync();
-
-            return Ok("Incident created");
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using bART_Test_Task.Models;
 using bART_Test_Task.Requests;
+using bART_Test_Task.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,53 +10,38 @@ namespace bART_Test_Task.Controllers
     [Route("api/accounts")]
     public class AccountController : ControllerBase
     {
-        private readonly TaskDbContext _dbContext;
+        private readonly IAccountService _accountService;
 
-        public AccountController(TaskDbContext dbContext)
+        public AccountController(IAccountService accountService)
         {
-            _dbContext = dbContext;
+            _accountService = accountService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAccounts()
         {
-            var accounts = await _dbContext.Accounts.Include(a => a.Contacts).ToListAsync();
+            var accounts = await _accountService.GetAccounts();
             return Ok(accounts);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountRequest request)
+        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountDTO accountDTO)
         {
-            var existingContact = _dbContext.Contacts.FirstOrDefault(c => c.Email == request.ContactEmail);
+            var result = await _accountService.CreateAccount(accountDTO);
 
-            if (existingContact == null)
+            switch (result)
             {
-                return NotFound("Contact not found!");
+                case AccountCreationResult.Success:
+                    return Ok("Account created and linked to the contact");
+                case AccountCreationResult.ContactNotFound:
+                    return NotFound("Contact not found!");
+                case AccountCreationResult.ContactAlreadyLinked:
+                    return Conflict("Contact is already linked to an account!");
+                case AccountCreationResult.AccountNameExists:
+                    return Conflict("Account with the provided name already exists!");
+                default:
+                    return StatusCode(500, "An error occurred");
             }
-
-            if (existingContact.Account != null)
-            {
-                return Conflict("Contact is already linked to an account!");
-            }
-
-            var existingAccount = _dbContext.Accounts.FirstOrDefault(a => a.Name == request.AccountName);
-
-            if (existingAccount != null)
-            {
-                return Conflict("Account with the provided name already exists!");
-            }
-
-            var newAccount = new Account { Name = request.AccountName };
-            existingContact.Account = newAccount;
-
-            existingContact.FirstName = request.ContactFirstName;
-            existingContact.LastName = request.ContactLastName;
-
-            _dbContext.Accounts.Add(newAccount);
-            await _dbContext.SaveChangesAsync();
-
-            return Ok("Account created and linked to the contact");
         }
     }
-}
 }

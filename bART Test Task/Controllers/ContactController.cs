@@ -1,7 +1,6 @@
-﻿using bART_Test_Task.Models;
-using bART_Test_Task.Requests;
+﻿using bART_Test_Task.Requests;
+using bART_Test_Task.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace bART_Test_Task.Controllers
 {
@@ -9,36 +8,26 @@ namespace bART_Test_Task.Controllers
     [Route("api/contacts")]
     public class ContactController : ControllerBase
     {
-        private readonly TaskDbContext _dbContext;
+        private readonly IContactService _contactService;
 
-        public ContactController(TaskDbContext dbContext)
+        public ContactController(IContactService contactService)
         {
-            _dbContext = dbContext;
+            _contactService = contactService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetContacts()
         {
-            var contacts = await _dbContext.Contacts.ToListAsync();
-
+            var contacts = await _contactService.GetContacts();
             return Ok(contacts);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateContact([FromBody] CreateContactRequest request)
+        public async Task<IActionResult> CreateContact([FromBody] CreateContactDTO contactDTO)
         {
             if (ModelState.IsValid)
             {
-                var newContact = new Contact
-                {
-                    FirstName = request.FirstName,
-                    LastName = request.LastName,
-                    Email = request.Email
-                };
-
-                _dbContext.Contacts.Add(newContact);
-                await _dbContext.SaveChangesAsync();
-
+                await _contactService.CreateContact(contactDTO);
                 return Ok("Contact created!");
             }
             else
